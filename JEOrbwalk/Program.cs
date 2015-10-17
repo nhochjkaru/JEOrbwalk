@@ -171,17 +171,17 @@ namespace JEOrbwalk
                    .Where(creep => creep.IsAlive && me.Distance2D(creep) <= me.GetAttackRange())
                    .OrderBy(creep => creep.Health).DefaultIfEmpty(null).FirstOrDefault();
       
-            var test = 0;
+            double test = 0;
             if (minion != null)
             {
                 
                 
-                var missilespeed =me.AttackRange/ GetProjectileSpeed(me);
-                var time = me.IsRanged == false ? 0 : /*Environment.TickCount / 1000000000 + (Game.Ping / 1000) +*/  UnitDatabase.GetAttackBackswing(me) + (me.Distance2D(minion) * missilespeed / 1000);
-                test = (int)Math.Round(time * minion.AttacksPerSecond) * minion.DamageAverage;
+                var missilespeed = GetProjectileSpeed(me);
+                var time = me.IsRanged == false ? 0 : UnitDatabase.GetAttackBackswing(me) + (me.Distance2D(minion) / missilespeed);
+                test = time * minion.AttacksPerSecond * minion.DamageAverage;
 
-               
-                //Console.WriteLine("test " + test + " time " + time + " distance " + me.Distance2D(minion) / missilespeed);
+
+                Console.WriteLine("test " + test + " time " + time + " distance " + me.Distance2D(minion) / missilespeed);
                 if (minion != null && (minion.Health) < GetPhysDamageOnUnit(minion, test))
                 {
 
@@ -221,8 +221,9 @@ namespace JEOrbwalk
         public static float GetProjectileSpeed(Hero unit)
         {
             //Console.WriteLine(unit.AttacksPerSecond * Game.FindKeyValues(unit.Name + "/AttackRate", KeyValueSource.Hero).FloatValue / 0.01);
-            var ProjectileSpeed = Game.FindKeyValues(unit.Name + "/ProjectileSpeed", KeyValueSource.Hero).FloatValue;
-
+            //var ProjectileSpeed = Game.FindKeyValues(unit.Name + "/ProjectileSpeed", KeyValueSource.Unit).FloatValue;
+            var ProjectileSpeed = UnitDatabase.GetByName(unit.Name).ProjectileSpeed;
+            
             return (float)ProjectileSpeed;
         }
     }
